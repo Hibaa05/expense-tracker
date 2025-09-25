@@ -4,6 +4,13 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
 import expensesRoutes from "./routes/expenses.js";
 
+import budgetsRoutes from "./routes/budgets.js";
+app.use("/api/budgets", budgetsRoutes);
+
+import recurringRoutes from "./routes/recurring.js";
+app.use("/api/recurring", recurringRoutes);
+
+
 dotenv.config();
 
 const app = express();
@@ -28,3 +35,13 @@ mongoose
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+
+import { startRecurringJob } from "./scheduler/recurringJob.js";
+
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("✅ MongoDB Connected");
+    startRecurringJob(); // start only after DB connected
+  })
+  .catch((err) => console.log("❌ MongoDB Error:", err));
